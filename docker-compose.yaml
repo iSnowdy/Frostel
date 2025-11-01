@@ -1,0 +1,50 @@
+
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frostel_app
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "5555:5555"
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - frostel_network
+    volumes:
+      - .:/app # For development hot reload
+
+  mysql:
+    image: mysql:8.0
+    container_name: frostel_mysql_db
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: ${FROSTEL_MYSQL_DATABASE}
+      MYSQL_USER: ${FROSTEL_MYSQL_USER}
+      MYSQL_ROOT_PASSWORD: ${FROSTEL_MYSQL_ROOT_PASSWORD}
+      MYSQL_PASSWORD: ${FROSTEL_MYSQL_PASSWORD}
+    ports:
+      - "3333:3306"
+    networks:
+      - frostel_network
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+      interval: 20s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  mysql_data:
+
+networks:
+  frostel_network:
+    driver: bridge
