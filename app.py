@@ -24,7 +24,7 @@ def hello_world():  # put application's code here
 
 @app.route('/login')
 def login():
-    return 'login'
+    return 'Login Test'
 
 
 @app.route('/db-health')
