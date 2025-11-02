@@ -1,0 +1,121 @@
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* User feedback (Flash Messages) */
+
+.flash-message {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #D4BF86;
+    border-color: black;
+    color: #16252C;
+    padding: 20px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), 0 6px 20px rgba(0, 0, 0, 0.19);
+    font-size: 1.2rem;
+    z-index: 1050; /* In front of everything */
+    opacity: 0; /* Hiding at the start */
+    animation: fadeInOut 4s ease-in-out;
+}
+
+/* https://blog.hubspot.com/website/css-fade-in */
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+    10% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    90% {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+    100% {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+}
+
+/* All Buttons */
+
+.btn {
+    border-radius: 25px;
+    padding: 10px 30px;
+    font-size: 1rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+/* Shadow */
+.btn:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+}
+
+.btn-primary {
+    background-color: #16252C;
+    color: #D4BF86;
+    border: 1px solid #16252C;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+    background-color: #CBA135;
+    border-color: #CBA135;
+    color: #16252C;
+}
+
+.btn-outline-primary {
+    border-color: #CBA135;
+    color: #CBA135;
+}
+
+.btn-outline-primary:hover {
+    background-color: #CBA135;
+    color: #16252C;
+    border-color: #CBA135;
+}
+
+.btn-outline-light:hover {
+    background-color: #CBA135;
+    color: #16252C;
+    border-color: #CBA135;
+}
+
+/* Navbar */
+
+.navbar {
+    box-shadow: 5px 5px 5px #000;
+    border-radius: 10px;
+}
+
+.navbar-nav .nav-link {
+    transition: color 0.3s ease, text-decoration 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #CBA135; /* Gold on hover */
+    text-decoration: underline; /* Underline effect */
+}
+
+/* Footer */
+.social-icon {
+    font-size: 1.5rem;
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.social-icon:hover {
+    transform: scale(1.1);
+    color: #CBA135;
+}
+
+
+/* BS overwritten */

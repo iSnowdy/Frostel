@@ -1,5 +1,4 @@
-import pymysql
-from flask import Flask
+from flask import Flask, render_template
 import os
 import pymysql
 
@@ -18,13 +17,17 @@ def get_db_connection():
 
 @app.route('/')
 def hello_world():  # put application's code here
-    return 'Hello World!'
+    return render_template("index.html")
 
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return 'Login Test'
+    return render_template("index.html")
+
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    return render_template("register.html")
 
 
 @app.route('/db-health')

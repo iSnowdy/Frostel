@@ -1,0 +1,52 @@
+.card {
+    border-radius: 15px;
+}
+
+.card:hover {
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.5);
+}
+
+.card-img {
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+}
+
+.offer-tag {
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 5px 10px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    border-radius: 5px;
+}
+
+.card:hover .offer-tag {
+    color: #D4BF86;
+}
+
+.card-body {
+    position: relative;
+}
+
+.membership-card {
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+}
+
+.membership-card .inner-card {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 20px;
+}
+
+.membership-card .membership-btns button {
+    width: 48%;
+    margin-top: 20px;
+}
