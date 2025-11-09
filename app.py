@@ -1,46 +1,104 @@
-from flask import Flask, render_template
+import atexit
+import logging
+
+from flask import Flask
 import os
-import pymysql
+from flask.cli import load_dotenv
+
+from app.database.connection import (
+    init_connection_pool,
+    ConnectionPool,
+    close_connection_pool,
+)
+from app.database.connection_config import ConnectionPoolConfig
 
 app = Flask(__name__)
 
-
-def get_db_connection():
-    return pymysql.connect(
-        host=os.getenv('FROSTEL_MYSQL_HOST', 'mysql'),
-        port=int(os.getenv('FROSTEL_MYSQL_PORT', 3306)),
-        user=os.getenv('FROSTEL_MYSQL_USER'),
-        password=os.getenv('FROSTEL_MYSQL_PASSWORD'),
-        database=os.getenv('FROSTEL_MYSQL_DATABASE')
-    )
+load_dotenv()
+logging.basicConfig(
+    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
-@app.route('/')
-def hello_world():  # put application's code here
-    return render_template("index.html")
+def _init_database() -> ConnectionPool:
+    logger.info("Initialising database")
 
-
-
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    return render_template("index.html")
-
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    return render_template("register.html")
-
-
-@app.route('/db-health')
-def db_health():
     try:
-        conn = get_db_connection()
-        conn.close()
-        return {"status": "health", "database": "connected"}
+        config = ConnectionPoolConfig.from_env()
+        pool: ConnectionPool = init_connection_pool(config)
+
+        logger.info("Connection pool initialised correctly")
+
+        return pool
+
     except Exception as e:
-        return {"status": "unhealthy", "error": str(e)}, 500
+        logger.error(f"Failed to initialise database: {e}", exc_info=True)
+        raise
 
 
+def _register_blueprints(app: Flask):
+    from app.api.v1.health import health_bp
+    from app.api.v1.main import main_bp
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5555, debug=True)
+    app.register_blueprint(main_bp)
+    app.register_blueprint(health_bp, url_prefix="/health")
 
+    logger.info("Blueprints registered")
+
+
+def _register_error_handlers(app: Flask):
+    # TODO: Add possible error handlers
+    pass
+
+
+def setup_app():
+    _init_database()
+    _register_blueprints(app)
+    _register_error_handlers(app)
+
+
+def cleanup_app():
+    logger.info("Cleaning up resources...")
+
+    try:
+        logger.info("Closing database connections...")
+        close_connection_pool()
+        logger.info("Database connections closed")
+
+        # Other resources to clean up here
+
+    except Exception as e:
+        logger.error(f"Error during application cleanup: {e}", exc_info=True)
+
+
+atexit.register(cleanup_app)
+
+
+@app.teardown_appcontext
+def teardown(exception=None):
+    if exception:
+        logger.error(f"Request failed with exception: {exception}", exc_info=True)
+        # This is purely for logging purposes on requests failed that reach this block of code
+        # Nothing else is done. Maybe consider removing this even?
+
+
+if __name__ == "__main__":
+    host = os.getenv("FLASK_HOST")
+    port = int(os.getenv("FLASK_PORT"))
+    debug = os.getenv("FLASK_DEBUG", "false").lower() == "true"
+
+    logger.info(f"Starting Frostel app server on {host}:{port} with debug={debug}")
+
+    try:
+        setup_app()
+        app.run(host=host, port=port, debug=debug)
+
+    except KeyboardInterrupt:
+        logger.error("Received keyboard interrupt, shutting down...")
+        cleanup_app()
+
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {e}", exc_info=True)
+        cleanup_app()
+        raise
