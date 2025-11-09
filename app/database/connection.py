@@ -14,7 +14,7 @@ from pymysql import Connection, Error
 
 from app.database.connection_config import ConnectionPoolConfig
 from app.database.connection_metrics import ConnectionMetrics
-from app.exceptions.base import CircuitBreakerException
+from app.exceptions.database import CircuitBreakerException
 from app.models.enums import CircuitState
 
 # TODO: Change to custom logger
@@ -309,8 +309,7 @@ class ConnectionPool:
                     self.metrics.circuit_state = CircuitState.HALF_OPEN
                 else:
                     raise CircuitBreakerException(
-                        f"Circuit breaker is open. Database appears to be down. "
-                        f"Retry in {self._circuit_timeout - elapsed:.0f}s"
+                        retry_after=self._circuit_failure_threshold
                     )
 
     def _reset_circuit(self):
@@ -329,7 +328,7 @@ class ConnectionPool:
             if self.metrics.circuit_state != CircuitState.CLOSED:
                 logger.warning("Circuit breaker closed. Database has recovered")
                 self.metrics.circuit_state = CircuitState.CLOSED
-                self.metrics.circuit_failures = 0 # TODO: Should we reset this?
+                self.metrics.circuit_failures = 0  # TODO: Should we reset this?
                 self.metrics.circuit_opened_at = None
 
     def _is_connection_stale(self, connection: Connection) -> bool:

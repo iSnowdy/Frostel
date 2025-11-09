@@ -37,7 +37,7 @@ from app.database.connection import (
     close_connection_pool,
 )
 from app.database.connection_config import ConnectionPoolConfig
-from app.exceptions.base import CircuitBreakerException
+from app.exceptions.database import CircuitBreakerException
 from app.models.enums import CircuitState
 
 # Configure logging
