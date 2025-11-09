@@ -11,13 +11,11 @@ from app.database.connection import (
     close_connection_pool,
 )
 from app.database.connection_config import ConnectionPoolConfig
+from app.utils.logger import _setup_logging
 
 app = Flask(__name__)
 
 load_dotenv()
-logging.basicConfig(
-    level=logging.DEBUG, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-)
 logger = logging.getLogger(__name__)
 
 
@@ -53,6 +51,10 @@ def _register_error_handlers(app: Flask):
 
 
 def setup_app():
+    logger_level = os.getenv("LOG_LEVEL", "INFO").upper()
+    _setup_logging(log_level=logger_level, console_output=True)
+
+
     _init_database()
     _register_blueprints(app)
     _register_error_handlers(app)
