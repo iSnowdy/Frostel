@@ -98,6 +98,8 @@ class QueryException(DatabaseException):
             self.extras["resource"] = resource
         if identifier:
             self.extras["identifier"] = identifier
+        if query:
+            self.extras["query"] = query
         if original_exception:
             self.extras["original_exception"] = str(original_exception)
             self.extras["original_exception_type"] = type(original_exception).__name__

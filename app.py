@@ -54,7 +54,6 @@ def setup_app():
     logger_level = os.getenv("LOG_LEVEL", "INFO").upper()
     _setup_logging(log_level=logger_level, console_output=True)
 
-
     _init_database()
     _register_blueprints(app)
     _register_error_handlers(app)

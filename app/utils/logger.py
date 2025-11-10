@@ -26,10 +26,7 @@ def _setup_logging(
     root_logger.handlers.clear()
 
     formatter = logging.Formatter(
-        fmt=(
-            "%(asctime)s | %(levelname)-8s | "
-            "%(name)s:%(lineno)d | %(message)s"
-        ),
+        fmt=("%(asctime)s | %(levelname)-8s | %(name)s:%(lineno)d | %(message)s"),
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
@@ -77,5 +74,3 @@ def _setup_logging(
     logger.info(f"Application log: {app_log_file}")
     logger.info(f"Error log: {error_log_file}")
     logger.info("=" * 80)
-
-
