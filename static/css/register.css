@@ -69,3 +69,16 @@
 .text-muted {
     color: #BDC3C7 !important;
 }
+
+.flash-messages {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto 20px auto;
+    padding: 0 15px;
+}
+
+.alert {
+    border-radius: 8px;
+    padding: 12px 20px;
+    margin-bottom: 10px;
+}

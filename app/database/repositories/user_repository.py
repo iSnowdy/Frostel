@@ -88,8 +88,11 @@ class UserRepository(BaseRepository[User]):
                         user.membership.name,
                     ),
                 )
+                conn.commit()
 
                 user_id = cursor.lastrowid
+
+                logger.debug(f"Created user {user} with id={user_id}")
 
                 return self.find_by_id(entity_id=user_id)
 

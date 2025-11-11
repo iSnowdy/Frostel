@@ -95,17 +95,16 @@
             </div>
         </nav>
 
-        <!-- Flash Messages. From CS50x but not sure if I want it here like this -->
         <!-- Flash Messages -->
-        {% if get_flashed_messages()%}
-            <header>
-                {% for message in get_flashed_messages() %}
-                    <div class="flash-message alert alert-primary text-center" role="alert">
-                        {{ get_flashed_messages() | join(" ") }}
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-message {{ category }}">
+                        {{ message }}
                     </div>
                 {% endfor %}
-            </header>
-        {% endif %}
+            {% endif %}
+        {% endwith %}
 
 
         <!-- Main Content -->
@@ -141,6 +140,14 @@
                 </div>
             </div>
         </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.flash-message').forEach(el => {
+                el.addEventListener('click', () => el.remove());
+            });
+        });
+    </script>
 
     <!-- JavaScript files -->
     {% block extra_js %}{% endblock %}

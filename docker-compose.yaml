@@ -17,7 +17,7 @@ services:
     volumes:
       - .:/app # For development hot reload
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:5555/health/"]
+      test: ["CMD", "curl", "-f", "http://localhost:5555/api/health/"]
       interval: 5m
       timeout: 5s
       retries: 3

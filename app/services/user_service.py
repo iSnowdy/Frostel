@@ -6,7 +6,8 @@ from app.database.repositories.user_repository import UserRepository
 from app.exceptions.business_logic import ResourceAlreadyExistsException, ResourceNotFoundException, \
     InvalidCredentialsException
 from app.exceptions.validation import ValidationException
-from app.models.user import CreateUserDTO, User, UpdateUserDTO
+from app.models.user import CreateUserDTO, User, UpdateUserDTO, validate_user_args, PWD_REQUIREMENTS
+from app.utils.validators import is_valid_password
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,6 @@ class UserService:
         logger.info(f"User with email '{user.email}' found")
         return self._mask_user_password(user)
 
-
     def authenticate(self, email: str, password: str) -> User | None:
         user = self.user_repo.find_by(email=email)
         if not user:
@@ -50,15 +50,22 @@ class UserService:
         logger.info(f"User '{user.email}' successfully authenticated")
         return self._mask_user_password(user)
 
-
     def register_user(self, dto: CreateUserDTO) -> User:
-        errors = dto.validate()
+        errors: list[str] = validate_user_args(
+            name=dto.name,
+            surname=dto.surname,
+            email=dto.email,
+            dob=dto.date_of_birth,
+            plaintext_password=dto.password,
+        )
 
         if errors:
+            logger.error(f"Validation failed: {errors}")
             raise ValidationException(
                 resource="user",
                 identifier=f"email={dto.email}",
-                errors=f"Validation failed: {errors}",
+                errors=f"Validation failed: {str(errors)}",
+                user_message=f"Validation failed. Reason(s): {errors}",
             )
 
         # Check that the user doesn't already exist
@@ -102,26 +109,47 @@ class UserService:
     def _verify_password(self, plaintext: str, hashed_password: str) -> bool:
         return bcrypt.checkpw(plaintext.encode("utf-8"), hashed_password.encode("utf-8"))
 
-
     def update_user(self, email: str, dto: UpdateUserDTO) -> User:
         user: User = self.get_user_by_email(email)
 
+        # TODO: Needs testing
         for field, value in dto.to_dict().items():
             if field == "password":
                 continue
             setattr(user, field, value)
 
-        user.
+        errors: list[str] = validate_user_args(
+            name=user.name,
+            surname=user.surname,
+            email=user.email,
+            dob=user.date_of_birth,
+        )
+        if errors:
+            raise ValidationException(
+                resource="user",
+                identifier=f"email={user.email}",
+                errors=f"Validation failed: {errors}",
+            )
 
         updated_user = self.user_repo.update(user.id, user)
         logger.info(f"User '{updated_user.email}' successfully updated")
         return self._mask_user_password(updated_user)
 
+    def change_user_password(self, email: str, new_password: str) -> User:
+        user: User = self.get_user_by_email(email)
 
+        if not is_valid_password(new_password):
+            raise ValidationException(
+                resource="user",
+                identifier=f"email={user.email}",
+                errors="Password is not valid",
+                user_message=PWD_REQUIREMENTS,
+            )
 
-
-
-
+        user.password = self._hash_password(new_password)
+        updated_user = self.user_repo.update(user.id, user)
+        logger.info(f"User '{updated_user.email}' password successfully updated")
+        return self._mask_user_password(updated_user)
 
     def _mask_user_password(self, user: User) -> User:
         user.password = "****"

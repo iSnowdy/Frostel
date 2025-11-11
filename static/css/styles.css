@@ -4,44 +4,67 @@ a {
 }
 
 /* User feedback (Flash Messages) */
-
 .flash-message {
     position: fixed;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #D4BF86;
-    border-color: black;
-    color: #16252C;
-    padding: 20px 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.7), 0 6px 20px rgba(0, 0, 0, 0.19);
-    font-size: 1.2rem;
-    z-index: 1050; /* In front of everything */
-    opacity: 0; /* Hiding at the start */
-    animation: fadeInOut 4s ease-in-out;
+    min-width: 300px;
+    max-width: 500px;
+    text-align: center;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    color: #fff;
+    font-weight: 500;
+    font-size: 1.1rem;
+    z-index: 2000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    opacity: 0;
+    animation: fadeInOut 4s ease-in-out forwards;
+    cursor: pointer;
+    pointer-events: auto;
 }
 
-/* https://blog.hubspot.com/website/css-fade-in */
+/* Categories */
+.flash-message.success {
+    background-color: #4CAF50;
+}
 
+.flash-message.error {
+    background-color: #E74C3C;
+}
+
+.flash-message.warning {
+    background-color: #F39C12;
+}
+
+.flash-message.info {
+    background-color: #3498DB;
+}
+
+/* Animations */
 @keyframes fadeInOut {
     0% {
         opacity: 0;
-        transform: translate(-50%, -60%);
+        transform: translate(-50%, -60%) scale(0.95);
+        pointer-events: none;
     }
-    10% {
+    10%, 85% {
         opacity: 1;
-        transform: translate(-50%, -50%);
-    }
-    90% {
-        opacity: 1;
-        transform: translate(-50%, -50%);
+        transform: translate(-50%, -50%) scale(1);
+        pointer-events: auto;
     }
     100% {
         opacity: 0;
-        transform: translate(-50%, -40%);
+        transform: translate(-50%, -40%) scale(0.95);
+        pointer-events: none;
     }
 }
+
+.flash-message:hover {
+    animation-play-state: paused;
+}
+
 
 /* All Buttons */
 

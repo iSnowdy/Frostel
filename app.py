@@ -37,10 +37,13 @@ def _init_database() -> ConnectionPool:
 
 def _register_blueprints(app: Flask):
     from app.api.v1.health import health_bp
-    from app.api.v1.main import main_bp
+    from app.web.home import home_bp
+    from app.web.auth import auth_bp
 
-    app.register_blueprint(main_bp)
-    app.register_blueprint(health_bp, url_prefix="/health")
+    app.register_blueprint(home_bp)
+    app.register_blueprint(auth_bp)
+
+    app.register_blueprint(health_bp, url_prefix="/api/health")
 
     logger.info("Blueprints registered")
 
@@ -93,6 +96,11 @@ if __name__ == "__main__":
 
     try:
         setup_app()
+        # Session key
+        app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+        if not app.config["SECRET_KEY"]:
+            raise ValueError("SECRET_KEY environment variable not set")
+
         app.run(host=host, port=port, debug=debug)
 
     except KeyboardInterrupt:

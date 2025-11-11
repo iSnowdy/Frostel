@@ -3,4 +3,3 @@ pymysql==1.1.2
 cryptography==41.0.7 # MySQL requires it
 python-dotenv==1.0.0
 bcrypt==3.2.2
-

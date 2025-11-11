@@ -20,25 +20,27 @@
                     <legend class="border-bottom mb-4">Register Information</legend>
                     <form action="/register" method="post" class="d-flex flex-column align-items-center">
                         <div class="mb-3 w-50">
-                            <input type="text" class="form-control" name="name" placeholder="Name" required maxlength="25">
+                            <input type="text" class="form-control" name="name" placeholder="Name" required
+                                   maxlength="25">
                         </div>
                         <div class="mb-3 w-50">
-                            <input type="text" class="form-control" name="surname_1" placeholder="First surname" required maxlength="25">
+                            <input type="text" class="form-control" name="surname" placeholder="Surname" required
+                                   maxlength="50">
                         </div>
                         <div class="mb-3 w-50">
-                            <input type="text" class="form-control" name="surname_2" placeholder="Second surname" maxlength="25">
+                            <input type="email" class="form-control" name="email" placeholder="Email" required
+                                   maxlength="30">
                         </div>
                         <div class="mb-3 w-50">
-                            <input type="email" class="form-control" name="email" placeholder="Email" required maxlength="30">
-                        </div>
-                        <div class="mb-3 w-50">
-                            <input type="date" class="form-control" name="date_of_birth" required placeholder="Enter your date of birth">
+                            <input type="date" class="form-control" name="dob" required
+                                   placeholder="Enter your date of birth">
                         </div>
                         <div class="mb-3 w-50">
                             <input type="password" class="form-control" name="password" placeholder="Password" required>
                         </div>
                         <div class="mb-3 w-50">
-                            <input type="password" class="form-control" name="password_repeat" placeholder="Type your password again" required>
+                            <input type="password" class="form-control" name="confirm_password"
+                                   placeholder="Type your password again" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-50">Register</button>
                         <p class="text-center mt-3">

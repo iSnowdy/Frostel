@@ -4,6 +4,9 @@ from datetime import datetime, date
 from app.models.enums import MembershipEnum
 from app.utils.validators import is_valid_password
 
+PWD_REQUIREMENTS = ("Password must be at least 8 characters, contain at least one digit, one symbol, "
+                    "one uppercase and one lowercase character")
+
 
 @dataclass
 class User:
@@ -12,7 +15,7 @@ class User:
     surname: str
     email: str
     password: str  # Hashed
-    date_of_birth: datetime.date
+    date_of_birth: date
     membership: MembershipEnum
     created_at: datetime | None = None
     updated_at: datetime | None = None
@@ -61,43 +64,8 @@ class CreateUserDTO:
     surname: str
     email: str
     password: str
-    date_of_birth: datetime.date
+    date_of_birth: date
     membership: MembershipEnum
-
-    # Returns a list of possible validation errors
-    # TODO: Enhance this validation
-    def validate(self) -> list[str]:
-        errors = []
-
-        if not self.name or len(self.name) < 2:
-            errors.append("Name must be at least 2 characters")
-
-        if not self.surname or len(self.surname) < 2:
-            errors.append("Surname must be at least 2 characters")
-
-        if not self.email or "@" not in self.email:
-            errors.append("Invalid email format")
-
-        today = date.today()
-        age = today.year - self.date_of_birth.year - (
-            (today.month, today.day) < (self.date_of_birth.month, self.date_of_birth.day)
-        )
-        if age < 18:
-            errors.append("You must be at least 18 years old")
-
-        if age > 120:
-            errors.append("Invalid date of birth")
-
-
-        if (
-            is_valid_password(password=self.password)
-        ):  # TODO: Is hashed function bool to validate
-            errors.append(
-                "Password must be at least 8 characters, contain at least one digit, one symbol, "
-                "one uppercase and one lowercase character"
-            )
-
-        return errors
 
 
 @dataclass
@@ -105,8 +73,7 @@ class UpdateUserDTO:
     name: str | None = None
     surname: str | None = None
     email: str | None = None
-    password: str | None = None
-    date_of_birth: datetime.date | None = None
+    date_of_birth: date | None = None
     membership: MembershipEnum | None = None
 
     def to_dict(self) -> dict:
@@ -116,9 +83,48 @@ class UpdateUserDTO:
                 "name": self.name,
                 "surname": self.surname,
                 "email": self.email,
-                "password": self.password,
                 "date_of_birth": self.date_of_birth,
                 "membership": self.membership.value if self.membership else None,
             }.items()
             if v is not None
         }
+
+
+# Returns a list of possible validation errors
+# TODO: Enhance this validation
+def validate_user_args(
+    name: str,
+    surname: str,
+    email: str,
+    dob: date,
+    plaintext_password: str | None = None
+) -> list[str]:
+    errors = []
+
+    if not name or len(name) < 2:
+        errors.append("Name must be at least 2 characters")
+
+    if not surname or len(surname) < 2:
+        errors.append("Surname must be at least 2 characters")
+
+    if not email or "@" not in email:
+        errors.append("Invalid email format")
+
+    today = date.today()
+    age = today.year - dob.year - (
+        (today.month, today.day) < (dob.month, dob.day)
+    )
+    if age < 18:
+        errors.append("You must be at least 18 years old")
+
+    if age > 120:
+        errors.append("Invalid date of birth")
+
+    if plaintext_password and not (
+        is_valid_password(password=plaintext_password)
+    ):  # TODO: Is hashed function bool to validate
+        errors.append(
+            PWD_REQUIREMENTS
+        )
+
+    return errors
